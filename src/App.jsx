@@ -112,32 +112,47 @@ export default function App() {
             {/* CABECERA */}
             <header className="space-y-4">
                 <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                        <div className="p-2 bg-emerald-500/20 text-emerald-400 rounded-xl">
-                            <Fuel className="w-6 h-6" />
-                        </div>
-                        <h1 className="text-xl font-bold tracking-tight text-white">GasOneClick</h1>
+                    <div className="flex items-center">
+                        <picture className="flex items-center shrink-0">
+                            <source media="(min-width: 1280px)" srcSet="/mark-512x512.png" />
+                            <source media="(min-width: 1024px)" srcSet="/mark-192x192.png" />
+                            <source media="(min-width: 640px)" srcSet="/mark-128x128.png" />
+                            <img
+                                src="/mark-64x64.png"
+                                alt="GasOneClick Mark"
+                                className="w-9 h-9 sm:w-10 sm:h-10 object-contain p-0 block"
+                            />
+                        </picture>
+                        <picture className="flex items-center shrink-0 -ml-1">
+                            <source media="(min-width: 1024px)" srcSet="/logo-horizontal-512x128.png" />
+                            <source media="(min-width: 640px)" srcSet="/logo-horizontal-256x64.png" />
+                            <img
+                                src="/logo-horizontal-128x32.png"
+                                alt="GasOneClick"
+                                className="h-7 sm:h-8 w-auto object-contain block"
+                            />
+                        </picture>
                     </div>
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-2 gap-1.5 sm:gap-2">
                         <button
                             onClick={() => getMapLocation(!openMapGPS)}
-                            className={`flex items-center space-x-1 text-xs px-3 py-1.5 rounded-full border transition cursor-pointer ${openMapGPS
+                            className={`flex items-center space-x-1 text-xs px-3 py-1.5 sm:px-3 sm:py-2 rounded-full border transition cursor-pointer ${openMapGPS
                                 ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
                                 : 'bg-slate-800 border-slate-700 text-slate-400 hover:text-white'
                                 }`}
                         >
                             <Map className="w-3.5 h-3.5" />
-                            <span>{openMapGPS ? 'Mapa Activo' : 'Mapa desactivado'}</span>
+                            <span className="hidden sm:inline">{openMapGPS ? 'Mapa Activo' : 'Mapa desactivado'}</span>
                         </button>
                         <button
                             onClick={() => getGPSLocation(true)}
-                            className={`flex items-center space-x-1 text-xs px-3 py-1.5 rounded-full border transition cursor-pointer ${usingGPS
+                            className={`flex items-center space-x-1 text-xs px-3 py-1.5 sm:px-3 sm:py-2 rounded-full border transition cursor-pointer ${usingGPS
                                 ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
                                 : 'bg-slate-800 border-slate-700 text-slate-400 hover:text-white'
                                 }`}
                         >
                             <Navigation className="w-3.5 h-3.5" />
-                            <span>{usingGPS ? 'GPS Activo' : 'Usar mi GPS'}</span>
+                            <span className="hidden sm:inline">{usingGPS ? 'GPS Activo' : 'Usar mi GPS'}</span>
                         </button>
                     </div>
                 </div>
@@ -218,7 +233,7 @@ export default function App() {
                             {loading ? (
                                 <>
                                     <RefreshCw className="w-4 h-4 animate-spin" />
-                                    <span>Analizando la mejor gasolinera en tu zona...</span>
+                                    <span>Analizando gasolineras...</span>
                                 </>
                             ) : (
                                 <>
