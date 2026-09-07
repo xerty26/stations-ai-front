@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
     Fuel,
     MapPin,
+    Map,
     Navigation,
     Sparkles,
     RefreshCw,
@@ -11,6 +12,10 @@ import {
     Search,
     SlidersHorizontal
 } from 'lucide-react';
+
+// Components
+import StationsMap from './components/StationsMap';
+import SelectGpsMap from './components/SelectGpsMap';
 
 const API_BASE_URL = import.meta.env.VITE_API_STATIONS_URL || null;
 
@@ -24,7 +29,7 @@ const FUELS = [
 const RADIUS_OPTIONS = [5, 10, 20, 30];
 
 export default function App() {
-    const [coords, setCoords] = useState({ lat: 40.437925, lng: -3.7619363 });
+    const [coords, setCoords] = useState({ lat: 40.41683699839633, lng: -3.7034332752227788 });
     const [fuel, setFuel] = useState('gasoleo_a');
     const [radius, setRadius] = useState(10);
     const [liters, setLiters] = useState(50);
@@ -33,28 +38,38 @@ export default function App() {
     const [error, setError] = useState(null);
     const [data, setData] = useState(null);
     const [usingGPS, setUsingGPS] = useState(false);
+    const [openMapGPS, setOpenMapGPS] = useState(false);
+    const [search, setSearch] = useState(false);
 
     useEffect(() => {
         getGPSLocation();
     }, []);
 
     const getGPSLocation = () => {
+        if (!navigator.geolocation) {
+            setError("Tu navegador no soporta geolocalización.");
+            return;
+        }
         if ('geolocation' in navigator) {
             navigator.geolocation.getCurrentPosition(
                 (pos) => {
                     const newCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
                     setCoords(newCoords);
                     setUsingGPS(true);
-                    setError(null);
+                    setOpenMapGPS(false);
                 },
                 (err) => {
-                    setError('Necesitas activar el GPS para buscar');
-                    console.error('Error in GPS:', err.message);
+                    //setOpenMapGPS(true);
                     setUsingGPS(false);
                 },
                 { timeout: 8000 }
             );
         }
+    };
+
+    const getMapLocation = (openMapGps) => {
+        setOpenMapGPS(openMapGps);
+        setUsingGPS(false);
     };
 
     const fetchReport = async () => {
@@ -74,6 +89,7 @@ export default function App() {
             const json = await res.json();
             setData(json);
             setError(null);
+            setSearch(true);
         } catch (err) {
             setError('Error en el servidor, prueba más tarde');
             console.error('Error in server:', err.message);
@@ -99,75 +115,117 @@ export default function App() {
                         </div>
                         <h1 className="text-xl font-bold tracking-tight text-white">GasOneClick</h1>
                     </div>
-
-                    <button
-                        onClick={() => getGPSLocation(true)}
-                        className={`flex items-center space-x-1 text-xs px-3 py-1.5 rounded-full border transition cursor-pointer ${usingGPS
+                    <div className="flex items-center space-x-2">
+                        <button
+                            onClick={() => getMapLocation(!openMapGPS)}
+                            className={`flex items-center space-x-1 text-xs px-3 py-1.5 rounded-full border transition cursor-pointer ${openMapGPS
                                 ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
                                 : 'bg-slate-800 border-slate-700 text-slate-400 hover:text-white'
-                            }`}
-                    >
-                        <Navigation className="w-3.5 h-3.5" />
-                        <span>{usingGPS ? 'GPS Activo' : 'Usar mi GPS'}</span>
-                    </button>
+                                }`}
+                        >
+                            <Map className="w-3.5 h-3.5" />
+                            <span>{openMapGPS ? 'Mapa Activo' : 'Mapa desactivado'}</span>
+                        </button>
+                        <button
+                            onClick={() => getGPSLocation(true)}
+                            className={`flex items-center space-x-1 text-xs px-3 py-1.5 rounded-full border transition cursor-pointer ${usingGPS
+                                ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                                : 'bg-slate-800 border-slate-700 text-slate-400 hover:text-white'
+                                }`}
+                        >
+                            <Navigation className="w-3.5 h-3.5" />
+                            <span>{usingGPS ? 'GPS Activo' : 'Usar mi GPS'}</span>
+                        </button>
+                    </div>
                 </div>
 
                 {/* PANEL DE FILTROS Y CONTROLES */}
-                <div className="bg-slate-800/60 p-4 rounded-2xl border border-slate-700/50 space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                            <label className="text-xs font-medium text-slate-400 mb-1.5 block">Tipo de Combustible</label>
-                            <select
-                                value={fuel}
-                                disabled={!usingGPS}
-                                onChange={(e) => setFuel(e.target.value)}
-                                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:ring-2 focus:ring-emerald-500 outline-none disabled:cursor-not-allowed"
-                            >
-                                {FUELS.map((f) => (
-                                    <option key={f.id} value={f.id}>{f.label}</option>
-                                ))}
-                            </select>
-                        </div>
+                {search && (
+                    <button
+                        onClick={() => setSearch(false)}
+                        className="text-emerald-400 hover:text-emerald-300 text-xs cursor-pointer"
+                    >
+                        Volver a buscar
+                    </button>
+                )}
+                {!search && (
+                    <div className="bg-slate-800/60 p-4 rounded-2xl border border-slate-700/50 space-y-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label className="text-xs font-medium text-slate-400 mb-1.5 block">Tipo de Combustible</label>
+                                <select
+                                    value={fuel}
+                                    onChange={(e) => setFuel(e.target.value)}
+                                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:ring-2 focus:ring-emerald-500 outline-none disabled:cursor-not-allowed"
+                                >
+                                    {FUELS.map((f) => (
+                                        <option key={f.id} value={f.id}>{f.label}</option>
+                                    ))}
+                                </select>
+                            </div>
 
-                        <div>
-                            <label className="text-xs font-medium text-slate-400 mb-1.5 block">Radio de Búsqueda</label>
-                            <div className="flex space-x-2">
-                                {RADIUS_OPTIONS.map((r) => (
-                                    <button
-                                        key={r}
-                                        disabled={!usingGPS}
-                                        onClick={() => setRadius(r)}
-                                        className={`flex-1 py-2 rounded-xl text-xs font-semibold transition cursor-pointer disabled:cursor-not-allowed ${radius === r
+                            <div>
+                                <label className="text-xs font-medium text-slate-400 mb-1.5 block">Radio de Búsqueda</label>
+                                <div className="flex space-x-2">
+                                    {RADIUS_OPTIONS.map((r) => (
+                                        <button
+                                            key={r}
+                                            onClick={() => setRadius(r)}
+                                            className={`flex-1 py-2 rounded-xl text-xs font-semibold transition cursor-pointer disabled:cursor-not-allowed ${radius === r
                                                 ? 'bg-emerald-500 text-slate-950'
                                                 : 'bg-slate-900 text-slate-400 hover:bg-slate-700 border border-slate-700'
-                                            }`}
-                                    >
-                                        {r} km
-                                    </button>
-                                ))}
+                                                }`}
+                                        >
+                                            {r} km
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         </div>
-                    </div>
-
-                    {/* BOTÓN PRINCIPAL DE BÚSQUEDA */}
-                    <button
-                        onClick={() => fetchReport()}
-                        disabled={loading || !usingGPS}
-                        className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 disabled:bg-slate-700 text-slate-950 font-bold rounded-xl transition flex items-center justify-center space-x-2 text-sm shadow-lg shadow-emerald-500/10 cursor-pointer disabled:cursor-not-allowed"
-                    >
-                        {loading ? (
-                            <>
-                                <RefreshCw className="w-4 h-4 animate-spin" />
-                                <span>Analizando con IA...</span>
-                            </>
-                        ) : (
-                            <>
-                                <Search className="w-4 h-4" />
-                                <span>Buscar la Mejor Gasolinera</span>
-                            </>
+                        {
+                            !usingGPS && !openMapGPS && (
+                                <div className="p-4 bg-rose-500/10 border border-rose-500/30 text-rose-300 rounded-2xl text-sm">
+                                    No hay permisos para acceder a la localización, activa el GPS o prueba a seleccionar en el mapa.
+                                    <button
+                                        onClick={() => setOpenMapGPS(true)}
+                                        className="text-emerald-400 hover:text-emerald-300 text-xs cursor-pointer"
+                                    >
+                                        Abrir mapa
+                                    </button>
+                                </div>
+                            )
+                        }
+                        {openMapGPS && (
+                            <SelectGpsMap
+                                coords={coords}
+                                onCoordsChange={(newCoords) => {
+                                    setCoords(newCoords);
+                                    setUsingGPS(false);
+                                }}
+                                radiusKm={radius}
+                            />
                         )}
-                    </button>
-                </div>
+
+                        {/* BOTÓN PRINCIPAL DE BÚSQUEDA */}
+                        <button
+                            onClick={() => fetchReport()}
+                            disabled={loading || (!usingGPS && !openMapGPS)}
+                            className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 disabled:bg-slate-700 text-slate-950 font-bold rounded-xl transition flex items-center justify-center space-x-2 text-sm shadow-lg shadow-emerald-500/10 cursor-pointer disabled:cursor-not-allowed"
+                        >
+                            {loading ? (
+                                <>
+                                    <RefreshCw className="w-4 h-4 animate-spin" />
+                                    <span>Analizando la mejor gasolinera en tu zona...</span>
+                                </>
+                            ) : (
+                                <>
+                                    <Search className="w-4 h-4" />
+                                    <span>Buscar la Mejor Gasolinera</span>
+                                </>
+                            )}
+                        </button>
+                    </div>
+                )}
             </header>
 
             {/* MANEJO DE ERRORES */}
@@ -209,7 +267,7 @@ export default function App() {
                             <div className="flex justify-between items-start">
                                 <span className="inline-flex items-center space-x-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs px-2.5 py-1 rounded-full font-medium">
                                     <Sparkles className="w-3.5 h-3.5" />
-                                    <span>Recomendación IA</span>
+                                    <span>Recomendación</span>
                                 </span>
                                 <div className="text-right">
                                     <span className="text-2xl font-black text-emerald-400">{bestOption.precio?.toFixed(3)} €</span>
@@ -275,6 +333,11 @@ export default function App() {
                         </h3>
 
                         <div className="space-y-2">
+                            <StationsMap className="w-full h-80 rounded-2xl overflow-hidden border border-slate-700/60 shadow-xl relative bg-slate-900 z-0"
+                                userCoords={coords}
+                                stations={data.top_estaciones}
+                                bestOptionAddress={bestOption?.direccion}
+                            />
                             {topStations.map((st, idx) => {
                                 const diffWithMin = st.price - minPrice;
                                 return (
