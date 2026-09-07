@@ -1,16 +1,100 @@
-# React + Vite
+# GasOneClick (Frontend)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend for **GasOneClick**: find nearby gas stations, compare prices, and show the best option suggested by the API (AI).
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Browser geolocation or manual map selection
+- Filters by fuel type, radius (km), and reference liters
+- Nearby station ranking with price and distance
+- Best-option recommendation (`ia.best_option`)
+- Interactive map (Leaflet) with markers and Google Maps links
 
-## React Compiler
+## Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React 19 + Vite 8
+- Tailwind CSS 4
+- Leaflet / react-leaflet
+- Lucide React (icons)
 
-## Expanding the ESLint configuration
+## Requirements
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- Node.js 18+ (20+ recommended)
+- npm
+
+## Setup
+
+1. Clone the repository and install dependencies:
+
+```bash
+npm install
+```
+
+2. Create a `.env` file from the sample:
+
+```bash
+cp .env.sample .env
+```
+
+3. Set the API base URL (Vite only exposes variables prefixed with `VITE_`):
+
+```env
+VITE_API_STATIONS_URL=https://your-api.example.com
+```
+
+> The app reads `import.meta.env.VITE_API_STATIONS_URL`. Without this variable, requests will have no base URL.
+
+## Scripts
+
+| Command           | Description                          |
+|-------------------|--------------------------------------|
+| `npm run dev`     | Development server (HMR)             |
+| `npm run build`   | Production build to `dist/`          |
+| `npm run preview` | Preview the production build locally |
+| `npm run lint`    | Run ESLint                           |
+
+## API
+
+The app calls the nearby stations report endpoint:
+
+```
+GET {VITE_API_STATIONS_URL}/stations/nearby/report
+```
+
+Query parameters:
+
+| Parameter   | Description                              |
+|-------------|------------------------------------------|
+| `user_lat`  | User latitude                            |
+| `user_lng`  | User longitude                           |
+| `radius_km` | Search radius in km (5, 10, 20, 30)      |
+| `fuel`      | Fuel type                                |
+
+Fuel types supported in the UI:
+
+- `gasolina_95_e5`
+- `gasolina_98_e5`
+- `gasoleo_a`
+- `gasoleo_premium`
+
+Expected response fields used by the UI:
+
+- `top_estaciones`: ranked list with price, distance, address, coordinates / Maps URL
+- `ia.best_option`: recommended option from the backend
+
+## Project structure
+
+```
+src/
+  App.jsx                      # Main UI, state, and API call
+  components/
+    StationsMap.jsx            # Results map
+    SelectGpsMap.jsx           # Map for manual location selection
+  index.css                    # Tailwind + Leaflet styles
+```
+
+## Notes
+
+- The map uses OpenStreetMap tiles.
+- If the browser denies geolocation, enable the map and pick a point manually.
+- Do not commit the `.env` file (it is already in `.gitignore`).
