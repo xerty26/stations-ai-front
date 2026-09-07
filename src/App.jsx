@@ -16,6 +16,7 @@ import {
 // Components
 import StationsMap from './components/StationsMap';
 import SelectGpsMap from './components/SelectGpsMap';
+import PWAInstallPrompt from './components/PWAInstallPrompt';
 
 const API_BASE_URL = import.meta.env.VITE_API_STATIONS_URL || '';
 
@@ -384,6 +385,8 @@ export default function App() {
 
                 </main>
             )}
+
+            <PWAInstallPrompt />
         </div>
     );
 }
