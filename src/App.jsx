@@ -17,7 +17,7 @@ import {
 import StationsMap from './components/StationsMap';
 import SelectGpsMap from './components/SelectGpsMap';
 
-const API_BASE_URL = import.meta.env.VITE_API_STATIONS_URL;
+const API_BASE_URL = import.meta.env.VITE_API_STATIONS_URL || '';
 
 const FUELS = [
     { id: 'gasolina_95_e5', label: 'Gasolina 95 E5' },
