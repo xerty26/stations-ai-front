@@ -17,7 +17,7 @@ import {
 import StationsMap from './components/StationsMap';
 import SelectGpsMap from './components/SelectGpsMap';
 
-const API_BASE_URL = import.meta.env.VITE_API_STATIONS_URL || null;
+const API_BASE_URL = import.meta.env.VITE_API_STATIONS_URL;
 
 const FUELS = [
     { id: 'gasolina_95_e5', label: 'Gasolina 95 E5' },
@@ -78,6 +78,9 @@ export default function App() {
         setError(null);
 
         try {
+            if (!API_BASE_URL) {
+                throw new Error('No se ha configurado la URL de la API');
+            }
             const url = `${API_BASE_URL}/stations/nearby/report?user_lat=${targetCoords.lat}&user_lng=${targetCoords.lng}&radius_km=${radius}&fuel=${fuel}`;
             const res = await fetch(url);
 
