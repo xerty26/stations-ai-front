@@ -17,6 +17,10 @@ import {
 import StationsMap from './components/StationsMap';
 import SelectGpsMap from './components/SelectGpsMap';
 import PWAInstallPrompt from './components/PWAInstallPrompt';
+import FrequentSearches from './components/FrequentSearches';
+
+// Hooks
+import { useRecentSearches } from './hooks/useRecentSearches';
 
 const API_BASE_URL = import.meta.env.VITE_API_STATIONS_URL || '';
 
@@ -42,9 +46,20 @@ export default function App() {
     const [openMapGPS, setOpenMapGPS] = useState(false);
     const [search, setSearch] = useState(false);
 
+    const { searches, saveSearch, removeSearch } = useRecentSearches();
+
     useEffect(() => {
         getGPSLocation();
     }, []);
+
+    const handleSearch = (searchData) => {
+        setCoords({ lat: searchData.lat, lng: searchData.lng });
+        setFuel(searchData.fuel);
+        setRadius(searchData.radius);
+
+        saveSearch(searchData);
+        fetchReport(searchData);
+    };
 
     const getGPSLocation = () => {
         if (!navigator.geolocation) {
@@ -73,8 +88,10 @@ export default function App() {
         setUsingGPS(false);
     };
 
-    const fetchReport = async () => {
-        const targetCoords = coords;
+    const fetchReport = async (searchData) => {
+        const targetCoords = {lat: searchData.lat, lng: searchData.lng};
+        const radius = searchData.radius;
+        const fuel = searchData.fuel;
         setLoading(true);
         setError(null);
 
@@ -162,7 +179,7 @@ export default function App() {
                 {/* PANEL DE FILTROS Y CONTROLES */}
                 {search && (
                     <button
-                        onClick={() => setSearch(false)}
+                        onClick={() => { setSearch(false); setUsingGPS(false); setOpenMapGPS(false); getGPSLocation(); }}
                         className="text-emerald-400 hover:text-emerald-300 text-xs cursor-pointer"
                     >
                         Volver a buscar
@@ -170,6 +187,11 @@ export default function App() {
                 )}
                 {!search && (
                     <div className="bg-slate-800/60 p-4 rounded-2xl border border-slate-700/50 space-y-4">
+                        <FrequentSearches 
+                            searches={searches} 
+                            onSelectSearch={(item) => handleSearch(item)} 
+                            onDeleteSearch={removeSearch} 
+                        />
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
                                 <label className="text-xs font-medium text-slate-400 mb-1.5 block">Tipo de Combustible</label>
@@ -228,7 +250,7 @@ export default function App() {
 
                         {/* BOTÓN PRINCIPAL DE BÚSQUEDA */}
                         <button
-                            onClick={() => fetchReport()}
+                            onClick={() => handleSearch({ hour:`${new Date().getHours()}:${new Date().getMinutes()}`, lat: coords.lat, lng: coords.lng, fuel, radius })}
                             disabled={loading || (!usingGPS && !openMapGPS)}
                             className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 disabled:bg-slate-700 text-slate-950 font-bold rounded-xl transition flex items-center justify-center space-x-2 text-sm shadow-lg shadow-emerald-500/10 cursor-pointer disabled:cursor-not-allowed"
                         >
