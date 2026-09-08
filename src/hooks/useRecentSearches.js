@@ -4,24 +4,25 @@ const STORAGE_KEY = 'gasoneclick_recent_searches';
 const MAX_ITEMS = 5;
 
 export function useRecentSearches() {
-    const [searches, setSearches] = useState([]);
-
-    useEffect(() => {
+    const [searches, setSearches] = useState(() => {
         try {
             const item = localStorage.getItem(STORAGE_KEY);
-            if (item) {
-                setSearches(JSON.parse(item));
-            }
+            return item ? JSON.parse(item) : [];
         } catch (e) {
-            console.error("Error al leer de localStorage", e);
+            console.error("Error leyendo localStorage", e);
+            return [];
         }
-    }, []);
+    });
 
     const saveSearch = (newSearch) => {
         try {
             setSearches((prev) => {
                 const filtered = prev.filter(
-                    (s) => Math.abs(s.lat - newSearch.lat) > 0.005 || Math.abs(s.lng - newSearch.lng) > 0.005
+                    (s) =>
+                        Math.abs(s.lat - newSearch.lat) > 0.005 ||
+                        Math.abs(s.lng - newSearch.lng) > 0.005 ||
+                        s.fuel !== newSearch.fuel ||
+                        s.radius !== newSearch.radius
                 );
 
                 const updated = [

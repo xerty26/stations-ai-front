@@ -11,9 +11,9 @@ export default function FrequentSearches({ searches, onSelectSearch, onDeleteSea
                         className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700/60 rounded-full px-3 py-1 text-xs text-slate-200 transition-colors cursor-pointer group"
                     >
                         <span onClick={() => onSelectSearch(item)} className="flex items-center gap-1 font-medium">
-                            📍 {item.hour || `${item.lat.toFixed(2)}, ${item.lng.toFixed(2)}`}
+                            📍{item.city.toUpperCase()} - {item.radius}km
                             <span className="text-[10px] text-emerald-400 font-bold uppercase">
-                                ({item.fuel.includes('gasolina') ? '95' : 'Diesel'})
+                                ({item.fuel.label})
                             </span>
                         </span>
                         <button
