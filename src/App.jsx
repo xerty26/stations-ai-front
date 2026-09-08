@@ -25,18 +25,21 @@ import { useRecentSearches } from './hooks/useRecentSearches';
 const API_BASE_URL = import.meta.env.VITE_API_STATIONS_URL || '';
 
 const FUELS = [
-    { id: 'gasolina_95_e5', label: 'Gasolina 95 E5' },
-    { id: 'gasolina_98_e5', label: 'Gasolina 98 E5' },
-    { id: 'gasoleo_a', label: 'Diésel / Gasóleo A' },
-    { id: 'gasoleo_premium', label: 'Diésel / Gasóleo Premium' },
+    { id: 'gasolina_95_e5', label: 'Gasolina 95' },
+    { id: 'gasolina_98_e5', label: 'Gasolina 98' },
+    { id: 'gasoleo_a', label: 'Diésel A' },
+    { id: 'gasoleo_premium', label: 'Diésel A+' },
+    { id: 'adblue', label: 'Adblue' },
+    { id: 'gasoleo_b', label: 'Diésel B' },
 ];
 
 const RADIUS_OPTIONS = [5, 10, 20, 30];
 
 export default function App() {
     const [coords, setCoords] = useState({ lat: 40.41683699839633, lng: -3.7034332752227788 });
-    const [fuel, setFuel] = useState('gasoleo_a');
-    const [radius, setRadius] = useState(10);
+    const [fuel, setFuel] = useState(FUELS[2]);
+    const [radius, setRadius] = useState(RADIUS_OPTIONS[1]);
+    const [city, setCity] = useState('Madrid');
     const [liters, setLiters] = useState(50);
 
     const [loading, setLoading] = useState(false);
@@ -52,13 +55,21 @@ export default function App() {
         getGPSLocation();
     }, []);
 
-    const handleSearch = (searchData) => {
-        setCoords({ lat: searchData.lat, lng: searchData.lng });
-        setFuel(searchData.fuel);
-        setRadius(searchData.radius);
+    const handleSearch = (searchData = null) => {
+        const currentData = searchData || { 
+            hour:`${new Date().getHours()}:${new Date().getMinutes()}`, 
+            lat: coords.lat, 
+            lng: coords.lng, 
+            fuel, 
+            radius,
+            city: bestOption?.municipio || null
+        };
+        setCoords({ lat: currentData.lat, lng: currentData.lng });
+        setFuel(currentData.fuel);
+        setRadius(currentData.radius);
+        currentData.city && setCity(currentData.city);
 
-        saveSearch(searchData);
-        fetchReport(searchData);
+        fetchReport(currentData);
     };
 
     const getGPSLocation = () => {
@@ -92,6 +103,7 @@ export default function App() {
         const targetCoords = {lat: searchData.lat, lng: searchData.lng};
         const radius = searchData.radius;
         const fuel = searchData.fuel;
+        
         setLoading(true);
         setError(null);
 
@@ -99,7 +111,7 @@ export default function App() {
             if (!API_BASE_URL) {
                 throw new Error('No se ha configurado la URL de la API');
             }
-            const url = `${API_BASE_URL}/stations/nearby/report?user_lat=${targetCoords.lat}&user_lng=${targetCoords.lng}&radius_km=${radius}&fuel=${fuel}`;
+            const url = `${API_BASE_URL}/stations/nearby/report?user_lat=${targetCoords.lat}&user_lng=${targetCoords.lng}&radius_km=${radius}&fuel=${fuel.id}`;
             const res = await fetch(url);
 
             if (!res.ok) {
@@ -111,6 +123,7 @@ export default function App() {
             setData(json);
             setError(null);
             setSearch(true);
+            saveSearch({...searchData, city: json.top_estaciones.filter(st => st.distancia_km > 0).sort((a,b) => a.distancia_km - b.distancia_km)[0].city});
         } catch (err) {
             setError('Error en el servidor, prueba más tarde');
             console.error('Error in server:', err.message);
@@ -177,6 +190,15 @@ export default function App() {
                 </div>
 
                 {/* PANEL DE FILTROS Y CONTROLES */}
+                
+                {/* BÚSQUEDAS RECENTES */}
+                {searches && searches.length > 0 && (
+                    <FrequentSearches 
+                        searches={searches} 
+                        onSelectSearch={(item) => handleSearch(item)} 
+                        onDeleteSearch={removeSearch} 
+                    />
+                )}
                 {search && (
                     <button
                         onClick={() => { setSearch(false); setUsingGPS(false); setOpenMapGPS(false); getGPSLocation(); }}
@@ -187,20 +209,15 @@ export default function App() {
                 )}
                 {!search && (
                     <div className="bg-slate-800/60 p-4 rounded-2xl border border-slate-700/50 space-y-4">
-                        <FrequentSearches 
-                            searches={searches} 
-                            onSelectSearch={(item) => handleSearch(item)} 
-                            onDeleteSearch={removeSearch} 
-                        />
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
                                 <label className="text-xs font-medium text-slate-400 mb-1.5 block">Tipo de Combustible</label>
                                 <select
-                                    value={fuel}
-                                    onChange={(e) => setFuel(e.target.value)}
+                                    value={fuel.id}
+                                    onChange={(e) => setFuel(FUELS.find(f => f.id === e.target.value))}
                                     className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:ring-2 focus:ring-emerald-500 outline-none disabled:cursor-not-allowed"
                                 >
-                                    {FUELS.map((f) => (
+                                    {FUELS.sort((a,b) => a.label.localeCompare(b.label)).map((f) => (
                                         <option key={f.id} value={f.id}>{f.label}</option>
                                     ))}
                                 </select>
@@ -250,7 +267,7 @@ export default function App() {
 
                         {/* BOTÓN PRINCIPAL DE BÚSQUEDA */}
                         <button
-                            onClick={() => handleSearch({ hour:`${new Date().getHours()}:${new Date().getMinutes()}`, lat: coords.lat, lng: coords.lng, fuel, radius })}
+                            onClick={() => handleSearch()}
                             disabled={loading || (!usingGPS && !openMapGPS)}
                             className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 disabled:bg-slate-700 text-slate-950 font-bold rounded-xl transition flex items-center justify-center space-x-2 text-sm shadow-lg shadow-emerald-500/10 cursor-pointer disabled:cursor-not-allowed"
                         >
@@ -287,7 +304,7 @@ export default function App() {
             )}
 
             {/* MENSAJE INICIAL SI AÚN NO SE HA BUSCADO */}
-            {!loading && !data && !error && (
+            {!loading && (!data || !search) && !error && (
                 <div className="text-center py-12 px-4 bg-slate-800/20 rounded-2xl border border-slate-800/50 space-y-3">
                     <div className="inline-flex p-3 bg-slate-800 rounded-full text-slate-400">
                         <SlidersHorizontal className="w-6 h-6" />
@@ -300,7 +317,7 @@ export default function App() {
             )}
 
             {/* RESULTADOS */}
-            {!loading && data && (
+            {!loading && data && search && (
                 <main className="space-y-6">
                     {/* HERO CARD: MEJOR OPCIÓN RECOMENDADA POR IA */}
                     {bestOption && (
