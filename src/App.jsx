@@ -106,6 +106,7 @@ export default function App() {
     const topStations = data?.top_estaciones || [];
     const minPrice = topStations.length > 0 ? topStations[0].price : 0 || 0;
     const maxPrice = topStations.length > 0 ? topStations[topStations.length - 1].price : 0 || 0;
+    const minDistance = topStations.length > 0 ? topStations.filter(st => st.distancia_km > 0).sort((a, b) => a.distancia_km - b.distancia_km)[0].distancia_km : 0;
 
     return (
         <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
@@ -279,7 +280,6 @@ export default function App() {
             {/* RESULTADOS */}
             {!loading && data && (
                 <main className="space-y-6">
-
                     {/* HERO CARD: MEJOR OPCIÓN RECOMENDADA POR IA */}
                     {bestOption && (
                         <div className="relative overflow-hidden bg-gradient-to-br from-slate-800 via-slate-800 to-emerald-950/40 p-5 rounded-2xl border border-emerald-500/30 space-y-4">
@@ -310,12 +310,19 @@ export default function App() {
 
                             {/* ESTIMACIÓN DE AHORRO */}
                             {maxPrice > bestOption.precio && (
+                                <>
+                                <span className="text-xs p-2 text-slate-300">Repostando ({liters}L vs. la gasolinera más cara):</span>
                                 <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-700/50 flex items-center justify-between text-xs">
-                                    <span className="text-slate-300">Ahorro est. ({liters}L vs. la más cara):</span>
+                                    <span className="text-slate-300">Ahorro est. :</span>
                                     <span className="font-bold text-emerald-400">
-                                        + {((maxPrice - bestOption.precio) * liters).toFixed(2)} €
+                                        +  {((maxPrice - bestOption.precio) * liters).toFixed(2)} €
+                                    </span>
+                                    <span className="text-slate-300">Ahorro mensual est. :</span>
+                                    <span className="font-bold text-emerald-400">
+                                        + {((maxPrice - bestOption.precio) * liters * 4).toFixed(2)} €
                                     </span>
                                 </div>
+                                </>
                             )}
 
                             {/* BOTÓN NAVEGACIÓN */}
@@ -359,6 +366,7 @@ export default function App() {
                             />
                             {topStations.map((st, idx) => {
                                 const diffWithMin = st.price - minPrice;
+                                const diffWithMax = st.price === maxPrice;
                                 return (
                                     <div key={st.id || idx} className="bg-slate-800/60 p-3.5 rounded-xl border border-slate-700/40 flex items-center justify-between text-xs space-x-3">
                                         <div className="flex items-center space-x-3 min-w-0">
@@ -367,14 +375,16 @@ export default function App() {
                                             </span>
                                             <div className="min-w-0">
                                                 <p className="font-semibold text-white truncate">{st.label}</p>
-                                                <p className="text-slate-400 truncate text-[11px]">{st.address} ({st.distancia_km} km)</p>
+                                                <p className="text-slate-400 truncate text-[11px]">{st.address}
+                                                    <span className={`ml-1 ${minDistance === st.distancia_km? 'text-emerald-400 font-semibold' : 'text-slate-400'}`}>({st.distancia_km} km)</span>
+                                                </p>
                                             </div>
                                         </div>
 
                                         <div className="text-right shrink-0">
                                             <span className="font-bold text-sm text-white block">{st.price?.toFixed(3)} €</span>
-                                            <span className={`text-[10px] ${diffWithMin === 0 ? 'text-emerald-400 font-semibold' : 'text-slate-400'}`}>
-                                                {diffWithMin === 0 ? 'Más barata' : `+${diffWithMin.toFixed(3)} €`}
+                                            <span className={`text-[10px] ${diffWithMin === 0 ? 'text-emerald-400 font-semibold' : diffWithMax ? 'text-rose-400 font-semibold' : 'text-slate-400'}`}>
+                                                {diffWithMin === 0 ? 'Más barata' : diffWithMax ? 'Más cara' : `+${diffWithMin.toFixed(3)} €`}
                                             </span>
                                         </div>
                                     </div>
