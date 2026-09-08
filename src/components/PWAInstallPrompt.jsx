@@ -7,26 +7,21 @@ export default function PWAInstallPrompt() {
     const [isIOS, setIsIOS] = useState(false);
 
     useEffect(() => {
-        // 1. Ocultar si ya está instalada / abierta en modo PWA standalone
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
         if (isStandalone) return;
 
-        // 2. Comprobar si el usuario ya descartó el aviso en esta sesión
         const isDismissed = sessionStorage.getItem('pwa_prompt_dismissed');
         if (isDismissed) return;
 
-        // 3. Detectar si es dispositivo iOS (iPhone / iPad)
         const userAgent = window.navigator.userAgent.toLowerCase();
         const isIosDevice = /iphone|ipad|ipod/.test(userAgent);
         setIsIOS(isIosDevice);
 
         if (isIosDevice) {
-            // Mostrar la alerta en iOS tras 2 segundos para no ser agresivo
             const timer = setTimeout(() => setShowPrompt(true), 2000);
             return () => clearTimeout(timer);
         }
 
-        // 4. Capturar el evento de Android / Chrome
         const handleBeforeInstallPrompt = (e) => {
             e.preventDefault();
             setDeferredPrompt(e);
@@ -58,7 +53,6 @@ export default function PWAInstallPrompt() {
 
     const handleDismiss = () => {
         setShowPrompt(false);
-        // Recordar que el usuario cerró el aviso durante la sesión actual
         sessionStorage.setItem('pwa_prompt_dismissed', 'true');
     };
 
