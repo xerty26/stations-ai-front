@@ -5,21 +5,99 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         <meta name="theme-color" content="#0f172a" />
         <meta name="description" content="Encuentra la gasolinera más barata cerca de ti" />
-        
+
         <meta name="google-adsense-account" content="ca-pub-9941251941031872">
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="GasOneClick" />
+        
+        <!-- Open Graph / Facebook / WhatsApp -->
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://gasoneclick.es/" />
+        <meta property="og:title" content="GasOneClick | Gasolina y Diésel más Baratos en Tiempo Real" />
+        <meta property="og:description" content="Encuentra las estaciones de servicio más económicas cerca de ti con tu GPS. Datos oficiales del Ministerio en un solo clic." />
+        <meta property="og:image" content="https://gasoneclick.es/og-image.png" />
+
+        <!-- Twitter -->
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:title" content="GasOneClick | Compara Precios de Carburante" />
+        <meta property="twitter:description" content="Ahorra hasta 15€ por depósito encontrando la gasolinera más barata cerca de tu ubicación." />
+        <meta property="twitter:image" content="https://gasoneclick.es/og-image.png" />
         <link rel="apple-touch-icon" href="/mark-192x192.png" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-        <title>GasOneClick</title>
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9941251941031872" crossorigin="anonymous"></script>
+        <title>GasOneClick | Gasolineras Baratas en Tiempo Real</title>
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9941251941031872"
+            crossorigin="anonymous"></script>
+        <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": "WebApplication",
+                "name": "GasOneClick",
+                "url": "https://gasoneclick.es",
+                "applicationCategory": "UtilitiesApplication",
+                "operatingSystem": "All",
+                "offers": {
+                    "@type": "Offer",
+                    "price": "0",
+                    "priceCurrency": "EUR"
+                }
+            }
+        </script>
+        <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": "FAQPage",
+                "mainEntity": [
+                    {
+                        "@type": "Question",
+                        "name": "¿Cómo saber cuál es la gasolinera más barata cerca de mi ubicación?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "Puedes encontrar la gasolinera más barata activando la geolocalización GPS en GasOneClick. La aplicación compara los precios oficiales del diésel y la gasolina 95/98 en tiempo real en un radio de 5 km a 30 km y te muestra la opción más económica ordenada por importe."
+                        }
+                    },
+                    {
+                        "@type": "Question",
+                        "name": "¿Qué día de la semana es más barata la gasolina en España?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "Por norma general, el lunes suele ser el día más barato para repostar en España. Los precios tienden a subir hacia el fin de semana (especialmente viernes y sábados) debido al aumento de la demanda y los desplazamientos."
+                        }
+                    },
+                    {
+                        "@type": "Question",
+                        "name": "¿Es de peor calidad el combustible de las gasolineras low cost?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "No. Todo el carburante vendido en España proviene de los mismos depósitos centrales (Exolum/CLH) y cumple con los estándares legales de calidad. Las marcas tradicionales añaden aditivos propios, mientras que las gasolineras low cost abaratan costes automatizando estaciones y ajustando sus márgenes comerciales."
+                        }
+                    },
+                    {
+                        "@type": "Question",
+                        "name": "¿Qué diferencia hay entre la Gasolina 95 E5 y E10?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "La diferencia radica en el porcentaje de bioetanol mezclado: la E5 contiene hasta un 5% de etanol y la E10 hasta un 10%. La gran mayoría de coches matriculados a partir del año 2000 pueden usar Gasolina 95 E10 sin problemas."
+                        }
+                    },
+                    {
+                        "@type": "Question",
+                        "name": "¿Dónde consultar el precio oficial del diésel y la gasolina en tiempo real?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "En GasOneClick puedes consultar los precios oficiales del Ministerio para la Transición Ecológica en tiempo real, con datos actualizados directamente desde el registro estatal de estaciones de servicio."
+                        }
+                    }
+                ]
+            }
+        </script>
     </head>
 
     <body class="bg-slate-950 text-slate-100 antialiased selection:bg-emerald-500 selection:text-white">
         <div id="root"></div>
         <script type="module" src="/src/main.jsx"></script>
     </body>
+
 </html>
