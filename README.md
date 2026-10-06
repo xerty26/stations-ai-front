@@ -13,6 +13,8 @@ Frontend for **GasOneClick**: find nearby gas stations, compare prices, and show
 ## Stack
 
 - React 19 + Vite 8
+- React Router 7
+- vite-plugin-pwa
 - Tailwind CSS 4
 - Leaflet / react-leaflet
 - Lucide React (icons)
@@ -76,6 +78,8 @@ Fuel types supported in the UI:
 - `gasolina_98_e5`
 - `gasoleo_a`
 - `gasoleo_premium`
+- `gasoleo_b`
+- `adblue`
 
 Expected response fields used by the UI:
 
@@ -86,10 +90,20 @@ Expected response fields used by the UI:
 
 ```
 src/
-  App.jsx                      # Main UI, state, and API call
+  main.jsx                     # Entry point
+  App.jsx                      # Routes (/ and /legal)
+  layouts/MainLoyout.jsx       # Shared layout with footer
+  pages/
+    Home.jsx                   # Main UI, state, and API call
+    Legal.jsx                  # Legal notice
   components/
     StationsMap.jsx            # Results map
     SelectGpsMap.jsx           # Map for manual location selection
+    FrequentSearches.jsx       # Recent searches list
+    PWAInstallPrompt.jsx       # PWA install banner
+    SeoExtraContent.jsx        # Extra SEO text on the home page
+    Header.jsx, Footer.jsx
+  hooks/useRecentSearches.js   # Recent searches in localStorage
   index.css                    # Tailwind + Leaflet styles
 ```
 
