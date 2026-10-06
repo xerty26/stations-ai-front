@@ -5,6 +5,10 @@ import { Link } from 'react-router-dom';
 
 // Components
 import Header from '../components/Header';
+import AdSense from '../components/AdSense';
+
+// Utils
+import { SITE_URL } from '../utils/format';
 
 export default function Legal() {
     const [searchParams] = useSearchParams();
@@ -13,6 +17,11 @@ export default function Legal() {
 
     return (
         <>
+            <title>Aviso legal, privacidad y cookies | GasOneClick</title>
+            <meta name="description" content="Aviso legal, política de privacidad y GPS, términos del servicio y política de cookies de GasOneClick." />
+            <link rel="canonical" href={`${SITE_URL}/legal`} />
+            <AdSense />
+
             <Header />
             <div className="max-w-md mx-auto w-full p-4 pb-12">
                 {/* Botón de retorno al inicio */}

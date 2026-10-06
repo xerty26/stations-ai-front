@@ -8,6 +8,10 @@ export default function Footer() {
                     <span className="text-emerald-400">⚡</span> GasOneClick
                 </div>
                 <nav className="flex flex-wrap justify-center items-center gap-x-2 gap-y-1 text-xs text-slate-400">
+                    <Link to="/gasolineras" className="hover:text-emerald-400 transition-colors cursor-pointer">
+                        Precios por provincia
+                    </Link>
+                    <span className="text-slate-700">·</span>
                     <Link to="/legal" className="hover:text-emerald-400 transition-colors cursor-pointer">
                         Aviso Legal
                     </Link>
