@@ -21,9 +21,13 @@ import FrequentSearches from '../components/FrequentSearches';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 import SeoExtraContent from '../components/SeoExtraContent';
+import AdSense from '../components/AdSense';
 
 // Hooks
 import { useRecentSearches } from '../hooks/useRecentSearches';
+
+// Utils
+import { SITE_URL } from '../utils/format';
 
 const API_BASE_URL = import.meta.env.VITE_API_STATIONS_URL || '';
 
@@ -37,6 +41,9 @@ const FUELS = [
 ];
 
 const RADIUS_OPTIONS = [5, 10, 20, 30];
+
+const getNearestStation = (stations) =>
+    stations.filter(st => st.distancia_km > 0).sort((a, b) => a.distancia_km - b.distancia_km)[0];
 
 export default function Home() {
     const [coords, setCoords] = useState({ lat: 40.41683699839633, lng: -3.7034332752227788 });
@@ -126,7 +133,7 @@ export default function Home() {
             setData(json);
             setError(null);
             setSearch(true);
-            saveSearch({ ...searchData, city: json.top_estaciones.filter(st => st.distancia_km > 0).sort((a, b) => a.distancia_km - b.distancia_km)[0].city });
+            saveSearch({ ...searchData, city: getNearestStation(json.top_estaciones || [])?.city || searchData.city || '' });
         } catch (err) {
             setError('Error en el servidor, prueba más tarde');
             console.error('Error in server:', err.message);
@@ -139,10 +146,15 @@ export default function Home() {
     const topStations = data?.top_estaciones || [];
     const minPrice = topStations.length > 0 ? topStations[0].price : 0 || 0;
     const maxPrice = topStations.length > 0 ? topStations[topStations.length - 1].price : 0 || 0;
-    const minDistance = topStations.length > 0 ? topStations.filter(st => st.distancia_km > 0).sort((a, b) => a.distancia_km - b.distancia_km)[0].distancia_km : 0;
+    const minDistance = getNearestStation(topStations)?.distancia_km || 0;
 
     return (
         <>
+            <title>GasOneClick | Gasolineras Baratas en Tiempo Real</title>
+            <meta name="description" content="Encuentra la gasolinera más barata cerca de ti" />
+            <link rel="canonical" href={`${SITE_URL}/`} />
+            <AdSense />
+
             {/* CABECERA */}
             <Header>
                 <button
