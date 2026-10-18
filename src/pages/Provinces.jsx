@@ -46,7 +46,14 @@ export default function Provinces() {
                     </p>
                 </header>
 
-                {!provinces && !error && <p className="text-sm text-slate-400">Cargando provincias…</p>}
+                {/* SKELETON SCREEN MIENTRAS CARGA */}
+                {!provinces && !error && (
+                    <div className="space-y-4 animate-pulse">
+                        <div className="h-44 bg-slate-800/50 rounded-2xl border border-slate-700/30"></div>
+                        <div className="h-28 bg-slate-800/50 rounded-2xl border border-slate-700/30"></div>
+                        <div className="h-64 bg-slate-800/50 rounded-2xl border border-slate-700/30"></div>
+                    </div>
+                )}
 
                 {error && (
                     <p className="text-sm text-slate-400">
@@ -72,6 +79,20 @@ export default function Provinces() {
                                 </li>
                             ))}
                         </ul>
+                        <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-5 space-y-3">
+                            <h2 className="text-lg md:text-xl font-bold text-slate-100">
+                                Por qué cambia el precio del combustible entre provincias
+                            </h2>
+                            <p className="text-sm text-slate-400 leading-relaxed">
+                                El precio final del litro suma el coste del crudo y su refino, los impuestos (IVA e impuesto especial de hidrocarburos), el transporte hasta la estación y el margen de cada gasolinera. Los tres primeros son casi iguales en toda la península. El margen es lo que más cambia: depende de la competencia local, de si la estación es de una marca tradicional o low cost y de si está desatendida.
+                            </p>
+                            <p className="text-sm text-slate-400 leading-relaxed">
+                                Canarias, Ceuta y Melilla tienen una fiscalidad propia (IGIC e IPSI en lugar del IVA), así que sus precios no son comparables con los de la península. En las provincias con mucha competencia entre estaciones, como Madrid, Barcelona o Valencia, suele haber más gasolineras baratas. En zonas rurales con pocas estaciones, la diferencia entre la más barata y la más cara puede ser mayor.
+                            </p>
+                            <p className="text-sm text-slate-400 leading-relaxed">
+                                Los precios se obtienen del Geoportal del Ministerio para la Transición Ecológica y el Reto Demográfico, donde cada gasolinera está obligada a comunicar sus cambios de tarifa. Las medias de cada provincia se calculan con todas las estaciones que venden ese carburante, y el ranking muestra las diez más baratas.
+                            </p>
+                        </section>
                         <AdSense />
                     </>
                 )}

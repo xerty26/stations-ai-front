@@ -1,4 +1,7 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import ProvinceLinks from './ProvinceLinks';
+import { MAIN_PROVINCES } from '../utils/provinces';
 
 export default function SeoExtraContent() {
     return (
@@ -81,6 +84,18 @@ export default function SeoExtraContent() {
                         </ul>
                     </div>
                 </div>
+            </article>
+            <article className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 md:p-8 space-y-4 backdrop-blur-sm shadow-xl">
+                <h2 className="text-xl md:text-2xl font-bold text-slate-100 tracking-tight">
+                    Precio de la gasolina y el diésel por provincia
+                </h2>
+                <p className="text-sm text-slate-400 leading-relaxed">
+                    El litro de carburante no cuesta lo mismo en todas partes. Cada página de provincia reúne el precio medio, el mínimo y el máximo de cada combustible, y el ranking de las diez gasolineras más baratas con los datos que las propias estaciones comunican al Ministerio.
+                </p>
+                <ProvinceLinks slugs={MAIN_PROVINCES} />
+                <Link to="/gasolineras" className="inline-block text-sm text-emerald-400 hover:text-emerald-300">
+                    Ver las 52 provincias →
+                </Link>
             </article>
             <article className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 md:p-8 space-y-6 backdrop-blur-sm shadow-xl">
                 <h2 className="text-xl md:text-2xl font-bold text-slate-100 tracking-tight">
