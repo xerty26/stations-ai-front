@@ -5,6 +5,7 @@ const MAX_ITEMS = 5;
 
 export function useRecentSearches() {
     const [searches, setSearches] = useState(() => {
+        if (typeof localStorage === 'undefined') return [];
         try {
             const item = localStorage.getItem(STORAGE_KEY);
             return item ? JSON.parse(item) : [];

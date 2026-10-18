@@ -9,17 +9,23 @@ import Legal from './pages/Legal';
 import Provinces from './pages/Provinces';
 import Province from './pages/Province';
 
+export function AppRoutes() {
+    return (
+        <Routes>
+            <Route element={<MainLayout />}>
+                <Route path="/" element={<Home />} />
+                <Route path="/legal" element={<Legal />} />
+                <Route path="/gasolineras" element={<Provinces />} />
+                <Route path="/gasolineras/:slug" element={<Province />} />
+            </Route>
+        </Routes>
+    );
+}
+
 export default function App() {
     return (
         <BrowserRouter>
-            <Routes>
-                <Route element={<MainLayout />}>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/legal" element={<Legal />} />
-                    <Route path="/gasolineras" element={<Provinces />} />
-                    <Route path="/gasolineras/:slug" element={<Province />} />
-                </Route>
-            </Routes>
+            <AppRoutes />
         </BrowserRouter>
     );
 }
