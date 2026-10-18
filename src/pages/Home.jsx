@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { lazy, Suspense, useState, useEffect } from 'react';
 import {
     Fuel,
     MapPin,
@@ -14,14 +14,15 @@ import {
 } from 'lucide-react';
 
 // Components
-import StationsMap from '../components/StationsMap';
-import SelectGpsMap from '../components/SelectGpsMap';
 import PWAInstallPrompt from '../components/PWAInstallPrompt';
 import FrequentSearches from '../components/FrequentSearches';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 import SeoExtraContent from '../components/SeoExtraContent';
 import AdSense from '../components/AdSense';
+
+const StationsMap = lazy(() => import('../components/StationsMap'));
+const SelectGpsMap = lazy(() => import('../components/SelectGpsMap'));
 
 // Hooks
 import { useRecentSearches } from '../hooks/useRecentSearches';
@@ -254,14 +255,16 @@ export default function Home() {
                                 )
                             }
                             {openMapGPS && (
-                                <SelectGpsMap
-                                    coords={coords}
-                                    onCoordsChange={(newCoords) => {
-                                        setCoords(newCoords);
-                                        setUsingGPS(false);
-                                    }}
-                                    radiusKm={radius}
-                                />
+                                <Suspense fallback={null}>
+                                    <SelectGpsMap
+                                        coords={coords}
+                                        onCoordsChange={(newCoords) => {
+                                            setCoords(newCoords);
+                                            setUsingGPS(false);
+                                        }}
+                                        radiusKm={radius}
+                                    />
+                                </Suspense>
                             )}
 
                             <button
@@ -394,11 +397,13 @@ export default function Home() {
                                     <span>Las 5 Gasolineras más baratas en la zona</span>
                                 </h3>
                                 <div className="space-y-2">
-                                    <StationsMap className="w-full h-80 rounded-2xl overflow-hidden border border-slate-700/60 shadow-xl relative bg-slate-900 z-0"
-                                        userCoords={coords}
-                                        stations={data.top_estaciones}
-                                        bestOptionAddress={bestOption?.direccion}
-                                    />
+                                    <Suspense fallback={<div className="w-full h-80 rounded-2xl bg-slate-900 border border-slate-700/60" />}>
+                                        <StationsMap className="w-full h-80 rounded-2xl overflow-hidden border border-slate-700/60 shadow-xl relative bg-slate-900 z-0"
+                                            userCoords={coords}
+                                            stations={data.top_estaciones}
+                                            bestOptionAddress={bestOption?.direccion}
+                                        />
+                                    </Suspense>
                                     {topStations.map((st, idx) => {
                                         const diffWithMin = st.price - minPrice;
                                         const diffWithMax = st.price === maxPrice;
