@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { MAIN_PROVINCES, PROVINCE_NAMES } from '../utils/provinces';
 
 export default function Footer() {
     return (
@@ -27,6 +28,13 @@ export default function Footer() {
                     <Link to="/legal?tab=cookies" className="hover:text-emerald-400 transition-colors cursor-pointer">
                         Política de Cookies
                     </Link>
+                </nav>
+                <nav aria-label="Gasolineras por provincia" className="flex flex-wrap justify-center gap-x-3 gap-y-1 text-[11px] text-slate-500">
+                    {MAIN_PROVINCES.slice(0, 10).map((slug) => (
+                        <Link key={slug} to={`/gasolineras/${slug}`} className="hover:text-emerald-400 transition-colors">
+                            {PROVINCE_NAMES[slug]}
+                        </Link>
+                    ))}
                 </nav>
                 <p className="text-[11px] text-slate-500 max-w-xs leading-relaxed">
                     Precios obtenidos de fuentes oficiales en tiempo real. ©{new Date().getFullYear()} GasOneClick.

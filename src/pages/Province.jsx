@@ -5,9 +5,11 @@ import { ExternalLink, Search } from 'lucide-react';
 // Components
 import Header from '../components/Header';
 import AdSense from '../components/AdSense';
+import ProvinceLinks from '../components/ProvinceLinks';
 
 // Utils
 import { SITE_URL, formatName, formatPrice, formatEuros } from '../utils/format';
+import { getRelatedProvinces } from '../utils/provinces';
 
 const API_BASE_URL = import.meta.env.VITE_API_STATIONS_URL || '';
 
@@ -43,6 +45,8 @@ export default function Province() {
     const data = loading ? null : result.data;
     const name = data ? formatName(data.name) : formatName(slug.replace(/-/g, ' '));
     const fuels = data ? Object.entries(data.fuels) : [];
+    const diesel = data?.fuels.gasoleo_a;
+    const gasoline = data?.fuels.gasolina_95_e5;
     const updatedAt = data?.updated_at
         ? new Date(data.updated_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
         : null;
@@ -71,7 +75,13 @@ export default function Province() {
                     )}
                 </header>
 
-                {loading && <p className="text-sm text-slate-400">Cargando precios…</p>}
+                {loading &&
+                    <div className="space-y-4 animate-pulse">
+                        <div className="h-44 bg-slate-800/50 rounded-2xl border border-slate-700/30"></div>
+                        <div className="h-28 bg-slate-800/50 rounded-2xl border border-slate-700/30"></div>
+                        <div className="h-64 bg-slate-800/50 rounded-2xl border border-slate-700/30"></div>
+                    </div>
+                }
 
                 {!loading && !data && (
                     <p className="text-sm text-slate-400">
@@ -140,6 +150,26 @@ export default function Province() {
                             );
                         })}
 
+                        {diesel && gasoline && (
+                            <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-5 space-y-3">
+                                <h2 className="text-lg md:text-xl font-bold text-slate-100">
+                                    ¿Diésel o gasolina en {name}?
+                                </h2>
+                                <p className="text-sm text-slate-400 leading-relaxed">
+                                    Hoy el diésel cuesta de media {formatPrice(diesel.avg)} €/L en {name} y la gasolina 95, {formatPrice(gasoline.avg)} €/L:
+                                    {' '}{gasoline.avg > diesel.avg ? 'el diésel sale' : 'la gasolina sale'} {formatPrice(Math.abs(gasoline.avg - diesel.avg))} €/L más barato.
+                                    En un depósito de {TANK_LITERS} litros son {formatEuros(Math.abs(gasoline.avg - diesel.avg) * TANK_LITERS)} € de diferencia, aunque el diésel consume menos por kilómetro y el resultado final depende de tu coche.
+                                </p>
+                                <p className="text-sm text-slate-400 leading-relaxed">
+                                    Dentro de la propia provincia, el precio de la gasolina 95 varía un {((gasoline.max - gasoline.min) / gasoline.avg * 100).toLocaleString('es-ES', { maximumFractionDigits: 1 })} % entre la gasolinera más barata ({formatPrice(gasoline.min)} €/L)
+                                    y la más cara ({formatPrice(gasoline.max)} €/L). La más económica está en {formatName(gasoline.top[0].city)}.
+                                </p>
+                                <p className="text-sm text-slate-400 leading-relaxed">
+                                    Las diferencias entre gasolineras vecinas suelen venir de la marca (las low cost y las desatendidas cobran menos), de la competencia en la zona y de la ubicación: las estaciones junto a autovías y en el centro de las ciudades acostumbran a ser las más caras.
+                                </p>
+                            </section>
+                        )}
+
                         <Link
                             to="/"
                             className="flex items-center justify-center gap-2 w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-sm rounded-2xl py-3 transition-colors"
@@ -150,6 +180,13 @@ export default function Province() {
                         <AdSense />
                     </>
                 )}
+
+                <section className="space-y-3">
+                    <h2 className="text-base font-semibold text-slate-100">
+                        Consulta también
+                    </h2>
+                    <ProvinceLinks slugs={getRelatedProvinces(slug)} />
+                </section>
             </main>
         </>
     );
