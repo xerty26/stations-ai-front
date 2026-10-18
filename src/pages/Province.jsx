@@ -9,7 +9,7 @@ import ProvinceLinks from '../components/ProvinceLinks';
 
 // Utils
 import { SITE_URL, formatName, formatPrice, formatEuros } from '../utils/format';
-import { getRelatedProvinces } from '../utils/provinces';
+import { getRelatedProvinces, PROVINCE_NAMES } from '../utils/provinces';
 
 const API_BASE_URL = import.meta.env.VITE_API_STATIONS_URL || '';
 
@@ -43,7 +43,7 @@ export default function Province() {
 
     const loading = result.slug !== slug;
     const data = loading ? null : result.data;
-    const name = data ? formatName(data.name) : formatName(slug.replace(/-/g, ' '));
+    const name = PROVINCE_NAMES[slug] || (data ? formatName(data.name) : formatName(slug.replace(/-/g, ' ')));
     const fuels = data ? Object.entries(data.fuels) : [];
     const diesel = data?.fuels.gasoleo_a;
     const gasoline = data?.fuels.gasolina_95_e5;
@@ -67,12 +67,11 @@ export default function Province() {
                     <h1 className="text-2xl md:text-3xl font-extrabold text-slate-100 tracking-tight">
                         Gasolineras más baratas en {name}
                     </h1>
-                    {data && (
-                        <p className="text-sm text-slate-400 leading-relaxed">
-                            Precios oficiales de las {data.total_estaciones} gasolineras de la provincia de {name}
-                            {updatedAt && <>, actualizados el {updatedAt}</>}. Las estaciones comunican sus precios al Ministerio para la Transición Ecológica y GasOneClick los ordena de más barato a más caro.
-                        </p>
-                    )}
+                    <p className="text-sm text-slate-400 leading-relaxed">
+                        {data ? <>Precios oficiales de las {data.total_estaciones} gasolineras de la provincia de {name}
+                            {updatedAt && <>, actualizados el {updatedAt}</>}. </> : <>Precios oficiales de las gasolineras de la provincia de {name}. </>}
+                        Las estaciones comunican sus precios al Ministerio para la Transición Ecológica y GasOneClick los ordena de más barato a más caro: gasolina 95, gasolina 98, diésel A y diésel A+, con el precio medio, el mínimo y el máximo de la provincia y el ranking de las diez gasolineras con el litro más económico.
+                    </p>
                 </header>
 
                 {loading &&
