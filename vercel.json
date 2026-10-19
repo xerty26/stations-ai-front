@@ -3,6 +3,7 @@
         { "source": "/legal", "destination": "/index.html" },
         { "source": "/gasolineras", "destination": "/index.html" },
         { "source": "/gasolineras/:slug", "destination": "/index.html" },
+        { "source": "/historico-precios", "destination": "/index.html" },
         { "source": "/sitemap.xml", "destination": "https://api.gasoneclick.es/sitemap.xml" }
     ],
     "headers": [

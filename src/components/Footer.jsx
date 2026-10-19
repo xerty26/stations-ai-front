@@ -13,6 +13,10 @@ export default function Footer() {
                         Precios por provincia
                     </Link>
                     <span className="text-slate-700">·</span>
+                    <Link to="/historico-precios" className="hover:text-emerald-400 transition-colors cursor-pointer">
+                        Histórico de precios
+                    </Link>
+                    <span className="text-slate-700">·</span>
                     <Link to="/legal" className="hover:text-emerald-400 transition-colors cursor-pointer">
                         Aviso Legal
                     </Link>

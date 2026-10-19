@@ -6,6 +6,7 @@ import { ExternalLink, Search } from 'lucide-react';
 import Header from '../components/Header';
 import AdSense from '../components/AdSense';
 import ProvinceLinks from '../components/ProvinceLinks';
+import PriceHistory from '../components/PriceHistory';
 
 // Utils
 import { SITE_URL, formatName, formatPrice, formatEuros } from '../utils/format';
@@ -24,7 +25,6 @@ const TANK_LITERS = 50;
 
 export default function Province() {
     const { slug } = useParams();
-    // Keep the slug with the result so a province change shows the loading state without resetting state in the effect
     const [result, setResult] = useState({ slug: null });
 
     useEffect(() => {
@@ -102,6 +102,8 @@ export default function Province() {
                                 </div>
                             ))}
                         </section>
+
+                        <PriceHistory name={name} history={data.history || {}} fuelLabels={FUEL_LABELS} nationalAvg={data.national_avg} />
 
                         {fuels.map(([fuel, stats]) => {
                             const cheapest = stats.top[0];
