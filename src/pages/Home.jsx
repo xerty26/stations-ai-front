@@ -86,6 +86,9 @@ export default function Home() {
     const getGPSLocation = () => {
         if (!navigator.geolocation) {
             setError("Tu navegador no soporta geolocalización.");
+            setOpenMapGPS(true);
+            setUsingGPS(false);
+            
             return;
         }
         if ('geolocation' in navigator) {
@@ -97,7 +100,7 @@ export default function Home() {
                     setOpenMapGPS(false);
                 },
                 (err) => {
-                    //setOpenMapGPS(true);
+                    setOpenMapGPS(true);
                     setUsingGPS(false);
                 },
                 { timeout: 8000 }

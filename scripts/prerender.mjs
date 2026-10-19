@@ -12,7 +12,7 @@ try {
     const { PROVINCE_NAMES } = await server.ssrLoadModule('/src/utils/provinces.js');
     const template = await readFile(join(DIST, 'index.html'), 'utf-8');
 
-    const routes = ['/', '/legal', '/gasolineras', ...Object.keys(PROVINCE_NAMES).map((slug) => `/gasolineras/${slug}`)];
+    const routes = ['/', '/legal', '/gasolineras', '/historico-precios', ...Object.keys(PROVINCE_NAMES).map((slug) => `/gasolineras/${slug}`)];
 
     for (const url of routes) {
         const html = render(url);
