@@ -14,6 +14,12 @@ export default function Legal() {
     const [searchParams] = useSearchParams();
     const defaultTab = searchParams.get('tab') || 'legal'; // 'legal' | 'privacidad' | 'cookies' | 'terminos'
     const [activeTab, setActiveTab] = useState(defaultTab);
+    const [prevDefaultTab, setPrevDefaultTab] = useState(defaultTab);
+
+    if (defaultTab !== prevDefaultTab) {
+        setPrevDefaultTab(defaultTab);
+        setActiveTab(defaultTab);
+    }
 
     return (
         <>
