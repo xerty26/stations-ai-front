@@ -17,10 +17,6 @@ export default function SeoExtraContent() {
                 <Link to="/gasolineras" className="inline-block text-sm text-emerald-400 hover:text-emerald-300">
                     Ver las 52 provincias →
                 </Link>
-                {' '}
-                <Link to="/historico-precios" className="inline-block text-sm text-emerald-400 hover:text-emerald-300 ml-4">
-                    Histórico de precios →
-                </Link>
             </article>
             <article className="space-y-6">
                 <h2 className="text-xl md:text-2xl font-bold text-slate-100 tracking-tight text-center">
