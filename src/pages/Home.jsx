@@ -16,9 +16,9 @@ import {
 // Components
 import PWAInstallPrompt from '../components/PWAInstallPrompt';
 import FrequentSearches from '../components/FrequentSearches';
-import Footer from '../components/Footer';
 import Header from '../components/Header';
 import SeoExtraContent from '../components/SeoExtraContent';
+import TodayPrices from '../components/TodayPrices';
 import AdSense from '../components/AdSense';
 
 const StationsMap = lazy(() => import('../components/StationsMap'));
@@ -438,6 +438,7 @@ export default function Home() {
                         </>
                     )}
                 </section>
+                <TodayPrices />
                 {/* SECCIÓN SEO */}
                 <SeoExtraContent />
                 <PWAInstallPrompt />
